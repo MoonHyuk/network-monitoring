@@ -1,0 +1,15 @@
+version: "3.7"
+
+networks:
+  network:
+    driver: bridge
+
+services:
+  app:
+    image: network_monitoring:0.1
+    container_name: network_monitoring
+    build:
+      context: .
+      dockerfile: Dockerfile
+    networks:
+      - network
