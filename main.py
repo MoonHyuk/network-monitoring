@@ -1,6 +1,7 @@
 import os
 import socket
-from slacker import Slacker
+import sqlite3
+from slacker import IncomingWebhook
 
 
 def get_hosts():
@@ -34,17 +35,34 @@ def tcp_open(host):
         s.close()
 
 
-def make_slack_attachment(host):
-    return [{
-        'title': host,
-        "text": "포트가 닫혀있습니다"
-    }]
-
-
+conn = sqlite3.connect('hosts.sqlite3')
+cursor = conn.cursor()
+cursor.execute('''CREATE TABLE IF NOT EXISTS dead_hosts (host TEXT PRIMARY KEY)''')
+conn.commit()
 hosts = get_hosts()
-
+slack = IncomingWebhook(url=os.environ['webhook_url'])
 for host in hosts:
-    if not tcp_open(host):
-        slack = Slacker(os.environ['slack_token'])
-        slack.chat.post_message(channel=os.environ['channel'], text=None, attachments=make_slack_attachment(host),
-                                as_user=True)
+    cursor.execute("SELECT host FROM dead_hosts WHERE host='{}'".format(host))
+
+    if tcp_open(host):
+        if cursor.fetchone() is not None:
+            cursor.execute("DELETE FROM dead_hosts WHERE host='{}'".format(host))
+            conn.commit()
+            slack.post({
+                "attachments": [{
+                    "author_name": host,
+                    "title": ":relieved: 서비스 정상화",
+                }]
+            })
+    elif cursor.fetchone() is None :
+        cursor.execute("INSERT INTO dead_hosts (host) VALUES ('{}')".format(host))
+        conn.commit()
+        slack.post({
+            "attachments": [{
+                "author_name": host,
+                "title": ":fearful: 서비스 접속 불가",
+            }]
+        })
+
+cursor.close()
+conn.close()

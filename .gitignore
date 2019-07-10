@@ -1,3 +1,5 @@
 .idea
 .env
 venv
+hosts.sqlite3
+.vscode/settings.json
