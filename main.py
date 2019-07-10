@@ -20,7 +20,7 @@ def parse_host(host):
 
 
 def tcp_open(host):
-    (ip, port) = parse_host(host)
+    (ip, port) = list(map(str.strip, parse_host(host)))
 
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     s.settimeout(3)
