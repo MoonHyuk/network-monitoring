@@ -46,5 +46,5 @@ hosts = get_hosts()
 for host in hosts:
     if not tcp_open(host):
         slack = Slacker(os.environ['slack_token'])
-        slack.chat.post_message(channel='#db서버-모니터링-테스트', text=None, attachments=make_slack_attachment(host),
+        slack.chat.post_message(channel=os.environ['channel'], text=None, attachments=make_slack_attachment(host),
                                 as_user=True)
