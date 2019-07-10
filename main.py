@@ -1,7 +1,6 @@
 import os
 import socket
-from datetime import datetime
-
+from slacker import Slacker
 
 def get_hosts():
     return os.environ['hosts'].split(',')
@@ -34,12 +33,16 @@ def tcp_open(host):
         s.close()
 
 
+def make_slack_attachment(host):
+    return [{
+        'title': host,
+        "text": "포트가 닫혀있습니다"
+    }]
+
+
 hosts = get_hosts()
 
 for host in hosts:
-    time = datetime.now()
-
-    if tcp_open(host):
-        print('{}: {} is open'.format(time, host))
-    else:
-        print('{}: {} is not open'.format(time, host))
+    if not tcp_open(host):
+        slack = Slacker(os.environ['slack_token'])
+        slack.chat.post_message(channel='#db서버-모니터링-테스트', text=None, attachments=make_slack_attachment(host), as_user=True)
