@@ -1,5 +1,6 @@
 # network-monitoring
 
+![slack message](monitoring-slack-message.PNG)  
 주기적으로 TCP 통신이 가능한지 확인하고, 이상이 있다면 슬랙 알림을 보내줍니다.
 
 ## 사용 방법
