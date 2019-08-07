@@ -5,7 +5,7 @@
 
 ## 사용 방법
 ```bash
-> git clone git@gitlab.corp.sellmate.co.kr:sellmate/network-monitoring.git
+> git clone git@github.com:MoonHyuk/network-monitoring.git
 > cd network-monitoring
 > vi .env (.env.example과 아래 문서를 참고하여 .env를 만들어주세요)
 > docker-compose build
